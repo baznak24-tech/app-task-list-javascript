@@ -1,59 +1,85 @@
-// Отримуємо посилання на елементи DOM
+// 1. Отримуємо посилання на елементи DOM
 const taskInput = document.getElementById('task-input');
 const taskAddBtn = document.getElementById('task-add-btn');
 const taskList = document.getElementById('task-list');
 
-// 39. Функція для додавання до списку завдань нового завдання
-// з добавленням кнопки видалення
+// Відтворюємо список завдань з LocalStorage при завантаженні сторінки
+document.addEventListener('DOMContentLoaded', loadTaskList);
+
+// 2. Функція для додавання до списку завдань нового завдання
 function addTask() {
     const taskText = taskInput.value.trim();
+    if (taskText === "") return;
 
-    if (taskText === "") {
-        alert("Будь ласка, введіть текст завдання!");
-        return;
-    }
+    // Створюємо елемент (false означає, що нове завдання не виконане)
+    createTaskListElement(taskText, false);
+    saveTaskList(); // Зберігаємо актуальний список у LocalStorage
 
-    // Створюємо елемент завдання (контейнер label)
+    taskInput.value = "";
+    taskInput.focus();
+}
+
+// 3. Універсальна функція для створення елементів списку
+function createTaskListElement(taskText, isCompleted) {
     const label = document.createElement('label');
     label.className = 'task-list-item';
 
-    // Наповнюємо його структурними елементами (додано кнопку ✖)
     label.innerHTML = `
-        <input type="checkbox">
+        <input type="checkbox" ${isCompleted ? 'checked' : ''}>
         <span class="task-checkmark"></span>
         <span class="task-text">${taskText}</span>
         <button class="task-delete-btn" title="Видалити завдання">✖</button>
     `;
 
-    // Додаємо подію для кнопки видалення завдання
-    const taskDeleteBtn = label.querySelector('.task-delete-btn');
-    taskDeleteBtn.addEventListener('click', () => {
-        label.remove(); // Видаляємо завдання
+    // Подія для чекбокса: зберігаємо зміни стану (виконано/не виконано)
+    const checkbox = label.querySelector('input');
+    checkbox.addEventListener('change', () => {
+        saveTaskList();
     });
 
-    // Додаємо нове завдання в список
-    taskList.appendChild(label);
+    // Подія для кнопки видалення: видаляємо елемент та оновлюємо сховище
+    const taskDeleteBtn = label.querySelector('.task-delete-btn');
+    taskDeleteBtn.addEventListener('click', () => {
+        label.remove();
+        saveTaskList();
+    });
 
-    // Очищаємо поле вводу
-    taskInput.value = "";
-    taskInput.focus();
+    taskList.appendChild(label);
 }
 
-// Функція для обробки подій на статичних елементах списку
-function attachTaskEvents(label) {
-    // Додаємо подію для кнопки видалення завдання
-    const taskDeleteBtn = label.querySelector('.task-delete-btn');
-    if (taskDeleteBtn) {
-        taskDeleteBtn.addEventListener('click', () => {
-            label.remove(); // Видаляємо завдання
+// 4. Функція для збереження всіх завдань у LocalStorage (JSON формат)
+function saveTaskList() {
+    const myTaskList = [];
+    document.querySelectorAll('.task-list-item').forEach(item => {
+        myTaskList.push({
+            text: item.querySelector('.task-text').innerText,
+            completed: item.querySelector('input').checked
+        });
+    });
+    // Серіалізація: перетворюємо масив об'єктів у рядок
+    localStorage.setItem('myTaskList', JSON.stringify(myTaskList));
+}
+
+// 5. Функція для зчитування даних при завантаженні застосунку
+function loadTaskList() {
+    // Спочатку видаляємо статичні завдання, які прописані в HTML
+    const staticTaskList = document.querySelectorAll('.task-list-item');
+    staticTaskList.forEach(item => {
+        item.remove();
+    });
+
+    // Отримуємо рядок із сховища
+    const savedTaskList = localStorage.getItem('myTaskList');
+    if (savedTaskList) {
+        // Десеріалізація: перетворюємо рядок назад у масив об'єктів
+        const myTasks = JSON.parse(savedTaskList);
+        myTasks.forEach(task => {
+            createTaskListElement(task.text, task.completed);
         });
     }
 }
 
-// Навішуємо функцію обробки подій на статичні елементи списку
-document.querySelectorAll('#task-list label').forEach(attachTaskEvents);
-
-// Слухачі подій для інтерфейсу
+// 6. Слухачі подій для інтерфейсу
 taskAddBtn.addEventListener('click', addTask);
 
 taskInput.addEventListener('keypress', (e) => {
@@ -61,3 +87,23 @@ taskInput.addEventListener('keypress', (e) => {
         addTask();
     }
 });
+
+// Додатковий обробник для статичних елементів (якщо вони раптом залишаться)
+function attachTaskListEvents(label) {
+    const taskDeleteBtn = label.querySelector('.task-delete-btn');
+    if (taskDeleteBtn) {
+        taskDeleteBtn.addEventListener('click', () => {
+            label.remove();
+            saveTaskList();
+        });
+    }
+
+    const checkbox = label.querySelector('input');
+    if (checkbox) {
+        checkbox.addEventListener('change', () => {
+            saveTaskList();
+        });
+    }
+}
+
+document.querySelectorAll('#task-list label').forEach(attachTaskListEvents);
