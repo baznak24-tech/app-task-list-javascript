@@ -172,3 +172,28 @@ input[type="text"]:focus {
 .task-list-item:hover .task-delete-btn {
     opacity: 1;
 }
+
+/* Кнопка для зміни стану виконання завдання */
+.task-done-btn {
+    margin-left: auto;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    background: green;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;  
+}
+
+
+/* Зміна відображення кнопки для зміни стану виконання завдання при наведенні на неї */
+.task-done-btn:hover {
+    background: forestgreen;
+}
+
+
+/* Відображення кнопки для зміни стану виконання завдання при наведенні на завдання */
+.task-list-item:hover .task-done-btn {
+    opacity: 1;
+}
