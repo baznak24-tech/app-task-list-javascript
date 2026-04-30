@@ -146,3 +146,28 @@ input[type="text"]:focus {
 #task-add-btn:hover {
     background-color: forestgreen;
 }
+
+/* Кнопка для видалення завдання */
+.task-delete-btn {
+    margin-left: auto;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    background: red;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;   
+}
+
+
+/* Зміна відображення кнопки для видалення завдання при наведенні на неї */
+.task-delete-btn:hover {
+    background: tomato;
+}
+
+
+/* Відображення кнопки для видалення завдання при наведенні на завдання */ 
+.task-list-item:hover .task-delete-btn {
+    opacity: 1;
+}
