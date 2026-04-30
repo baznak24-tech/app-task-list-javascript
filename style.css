@@ -197,3 +197,28 @@ input[type="text"]:focus {
 .task-list-item:hover .task-done-btn {
     opacity: 1;
 }
+
+/* Кнопка для редагування тексту завдання  */
+.task-edit-btn {
+    margin-left: auto;
+    padding: 5px 7px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    background: aqua;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+
+/* Зміна відображення кнопки для редагування тексту завдання при наведенні на неї */
+.task-edit-btn:hover {
+    background: aquamarine;
+}
+
+
+/* Відображення кнопки для редагування тексту завдання при наведенні на завдання */
+.task-list-item:hover .task-edit-btn {
+    opacity: 1;
+}
