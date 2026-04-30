@@ -11,7 +11,6 @@ function addTask() {
     const taskText = taskInput.value.trim();
     if (taskText === "") return;
 
-    // Створюємо елемент (false - за замовчуванням завдання не виконане)
     createTaskListElement(taskText, false);
     saveTaskList(); // Зберігаємо після додавання
 
@@ -20,12 +19,10 @@ function addTask() {
 }
 
 // 3. Універсальна функція для створення елементів списку
-// Підтримує редагування, видалення та збереження стану
 function createTaskListElement(taskText, isCompleted) {
     const label = document.createElement('label');
     label.className = 'task-list-item';
 
-    // Наповнюємо структурними елементами з атрибутами редагування
     label.innerHTML = `
         <input type="checkbox" ${isCompleted ? 'checked' : ''}>
         <span class="task-checkmark"></span>
@@ -35,9 +32,15 @@ function createTaskListElement(taskText, isCompleted) {
 
     const textSpan = label.querySelector('.task-text');
 
+    // --- НОВЕ (Пункт 72) ---
+    // Запобігаємо спрацюванню події для label при кліку на тексті завданні
+    textSpan.addEventListener('click', (e) => {
+        e.preventDefault();
+    });
+    // -----------------------
+
     // Зберігаємо зміни після редагування (втрата фокусу)
     textSpan.addEventListener('blur', () => {
-        // Перевірка на порожній текст (Пункт 63)
         if (textSpan.innerText.trim() === "") {
             textSpan.innerText = "Введіть нове завдання";
         }
@@ -47,8 +50,8 @@ function createTaskListElement(taskText, isCompleted) {
     // Завершення редагування при натисканні Enter
     textSpan.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Забороняємо перенесення рядка
-            textSpan.blur();    // Викликаємо blur для збереження
+            e.preventDefault();
+            textSpan.blur();
         }
     });
 
@@ -88,7 +91,6 @@ function saveTaskList() {
 
 // 5. Функція для завантаження списку завдань
 function loadTaskList() {
-    // Видаляємо статичні завдання з HTML, щоб уникнути дублів (Крок 58)
     const staticTaskList = document.querySelectorAll('.task-list-item');
     staticTaskList.forEach(item => {
         item.remove();
@@ -112,10 +114,17 @@ taskInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Функція для "оживлення" статичних елементів (якщо вони залишаються в HTML)
+// Функція для "оживлення" статичних елементів
 function attachTaskListEvents(label) {
     const textSpan = label.querySelector('.task-text');
     if (textSpan) {
+        // --- НОВЕ (Пункт 72) ---
+        // Запобігаємо спрацюванню події для label при кліку на тексті завданні
+        textSpan.addEventListener('click', (e) => {
+            e.preventDefault();
+        });
+        // -----------------------
+
         textSpan.addEventListener('blur', () => {
             if (textSpan.innerText.trim() === "") {
                 textSpan.innerText = "Введіть нове завдання";
@@ -144,5 +153,4 @@ function attachTaskListEvents(label) {
     }
 }
 
-// Застосовуємо логіку до початкових елементів списку
 document.querySelectorAll('#task-list .task-list-item').forEach(attachTaskListEvents);
